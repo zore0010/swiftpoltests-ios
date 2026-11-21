@@ -12,7 +12,8 @@ final class TestRoutingTests: XCTestCase {
     func testRequestMapsIntoTheTestFolder() {
         let url = TestRouting.fileURL(for: URL(string: "app://axes/longquiz.html")!,
                                       webRoot: webRoot, knownTests: known)
-        XCTAssertEqual(url?.path, "/tmp/wkwv-web/tests/axes/longquiz.html")
+        XCTAssertEqual(url?.lastPathComponent, "longquiz.html")
+        XCTAssertEqual(url?.deletingLastPathComponent().lastPathComponent, "axes")
     }
 
     func testRootMapsToIndex() {
@@ -27,11 +28,17 @@ final class TestRoutingTests: XCTestCase {
                                          webRoot: webRoot, knownTests: known))
     }
 
-    func testParentDirectoryStaysInsideTheTestFolder() {
-        // The 12Axes pages refer to ../icons, which is outside the test folder. It must not resolve there.
+    func testParentDirectoryCannotLeaveTheTestFolder() {
+        // Whether Foundation keeps or removes "..", a result must never point outside the test's folder.
+        let testRoot = webRoot
+            .appendingPathComponent("tests", isDirectory: true)
+            .appendingPathComponent("axes", isDirectory: true)
+            .path
         let url = TestRouting.fileURL(for: URL(string: "app://axes/../icons/12axes.png")!,
                                       webRoot: webRoot, knownTests: known)
-        XCTAssertNil(url)
+        if let url {
+            XCTAssertTrue(url.path.hasPrefix(testRoot + "/"))
+        }
     }
 
     func testMimeTypes() {

@@ -19,7 +19,7 @@ struct AboutView: View {
             }
 
             Section("This app") {
-                Text("Personal, non-commercial use only. Not for distribution.")
+                Text("Shared under CC BY-NC-SA 4.0. Credit the authors listed here, and share any changes under the same license.")
                 Text("Your answers are saved on this device after every question. An unfinished test can be resumed, and finished results are kept under Saved results.")
             }
         }

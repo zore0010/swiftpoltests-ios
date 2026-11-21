@@ -37,14 +37,18 @@ jobs:
 
       - name: Run unit tests
         run: |
+          set -o pipefail
+          mkdir -p build
           xcodebuild test \
             -project WKWVTests.xcodeproj \
             -scheme WKWVTests \
             -destination 'platform=iOS Simulator,name=iPhone 16,OS=latest' \
-            CODE_SIGNING_ALLOWED=NO
+            CODE_SIGNING_ALLOWED=NO 2>&1 | tee build/test.log
 
       - name: Archive (unsigned)
         run: |
+          set -o pipefail
+          mkdir -p build
           xcodebuild archive \
             -project WKWVTests.xcodeproj \
             -scheme WKWVTests \
@@ -53,7 +57,7 @@ jobs:
             -archivePath build/WKWVTests.xcarchive \
             CODE_SIGNING_ALLOWED=NO \
             CODE_SIGNING_REQUIRED=NO \
-            CODE_SIGN_IDENTITY=
+            CODE_SIGN_IDENTITY= 2>&1 | tee build/archive.log
 
       - name: Package unsigned IPA
         run: bash scripts/package-ipa.sh build/WKWVTests.xcarchive build/WKWVTests-unsigned.ipa
@@ -65,3 +69,19 @@ jobs:
           path: build/WKWVTests-unsigned.ipa
           if-no-files-found: error
           retention-days: 14
+
+      - name: Show errors on the run summary page
+        if: failure()
+        run: |
+          {
+            echo "## Build failed: errors from the logs"
+            echo
+            echo '```'
+            for f in build/test.log build/archive.log; do
+              if [ -f "$f" ]; then
+                echo "--- $f ---"
+                grep -E 'error:|failed|FAILED|fatal' "$f" | head -150 || true
+              fi
+            done
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"

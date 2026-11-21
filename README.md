@@ -1,6 +1,6 @@
-# Political Tests (private)
+# Political Tests
 
-A personal, private iOS app with two political-values quizzes behind one menu:
+An iOS app with two political-values quizzes behind one menu:
 
 - **NeoValues**, bundled from the fork of neomediavalist's project.
 - **12 Axes**, the MIT-licensed quiz from the politicaltests project.
@@ -8,7 +8,7 @@ A personal, private iOS app with two political-values quizzes behind one menu:
 Both save every answer as you go. An unfinished quiz can be resumed after a misclick or a restart, and each
 finished result is kept under Saved results.
 
-Personal, non-commercial use only. Not for distribution.
+License: CC BY-NC-SA 4.0 for this project. Credits and the MIT notices are in `ATTRIBUTION.md` and in the app's About screen.
 
 ## How the quizzes are built
 
@@ -21,7 +21,7 @@ and wraps the quiz's own functions to save and restore state.
 ## Build
 
 CI (push to `main`, or run the iOS workflow by hand) produces an unsigned `WKWVTests-unsigned-ipa` artifact.
-Sign it yourself before installing.
+If a step fails, the errors are listed on the run's summary page.
 
 Locally (macOS only):
 
