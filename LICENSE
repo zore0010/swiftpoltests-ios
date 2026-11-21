@@ -1,11 +1,10 @@
-Wrapper code and original documentation in this repository:
+Original code in this repository (App/, Tests/, scripts/, project.yml, documentation) is licensed under
+Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0):
+https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
-  Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0)
-  https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
+The bundled NeoValues quiz (fetched at build time from zore0010/neovalues) is CC BY-NC-SA 4.0 by its author,
+neomediavalist. See ATTRIBUTION.md.
 
-The NeoValues content is licensed under CC BY-NC-SA 4.0 by its author (see ATTRIBUTION.md).
-
-The 12 Axes content is not licensed under CC BY-NC-SA. It is used only under the written permission
-described in PERMISSIONS.md, and under the terms of the 12 Axes project (copyright (c) 2026 Enzo Xavier
-Santos, all rights reserved). Nothing in this file grants any right to the 12 Axes content beyond that
-permission.
+The bundled 12Axes quiz (fetched at build time from politicaltests/politicaltests.github.io, folder 12axes) is
+under the MIT License, copyright (c) 2020 8values (SapplyValues). Its full license text is included with the
+quiz in the app bundle.

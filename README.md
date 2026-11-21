@@ -1,28 +1,50 @@
-# wkwvtests-ios (private)
+# Political Tests (private)
 
-A personal, private iOS app that bundles two political-values tests behind a menu:
+A personal, private iOS app with two political-values quizzes behind one menu:
 
-- **NeoValues**, a values quiz based on the NeoValues project.
-- **12 Axes**, a twelve-axis quiz based on the 12 Axes project.
+- **NeoValues**, bundled from the fork of neomediavalist's project.
+- **12 Axes**, the MIT-licensed quiz from the politicaltests project.
 
-Personal, non-commercial use only. Not for the App Store, not for publication, and not for distribution
-beyond the person who installs it.
+Both save every answer as you go. An unfinished quiz can be resumed after a misclick or a restart, and each
+finished result is kept under Saved results.
 
-## Credits
+Personal, non-commercial use only. Not for distribution.
 
-This app would not exist without the work of the original authors. See `ATTRIBUTION.md` for full credits,
-licenses, and what was changed.
+## How the quizzes are built
 
-- **NeoValues** by neomediavalist (https://github.com/neomediavalist/neovalues), licensed CC BY-NC-SA 4.0.
-- **12 Axes** by Enzo Xavier Santos, all rights reserved. Used under written permission for personal,
-  non-commercial use. See `PERMISSIONS.md`.
+`scripts/fetch-sources.sh` clones each source at a pinned commit and copies only the quiz folder into `Web/`.
+The pins are at the top of that script. The bundled quizzes are not edited.
 
-## Status
+`App/OverlayScript.swift` is the one piece of JavaScript written for this app. It is added to each quiz page
+and wraps the quiz's own functions to save and restore state.
 
-The repo was started with the credits and license notices in place. App code and data come next.
+## Build
 
-## Licenses
+CI (push to `main`, or run the iOS workflow by hand) produces an unsigned `WKWVTests-unsigned-ipa` artifact.
+Sign it yourself before installing.
 
-- Wrapper code and original documentation in this repo: CC BY-NC-SA 4.0 (see `LICENSE`).
-- NeoValues content: CC BY-NC-SA 4.0.
-- 12 Axes content: the terms of the 12 Axes project, as granted in `PERMISSIONS.md`.
+Locally (macOS only):
+
+```bash
+bash scripts/fetch-sources.sh Web
+brew install xcodegen
+xcodegen generate
+open WKWVTests.xcodeproj
+```
+
+## Layout
+
+| Path | Purpose |
+| --- | --- |
+| `App/` | SwiftUI menu, WebView screen, scheme handler, progress and history storage, About screen |
+| `App/OverlayScript.swift` | The overlay that saves and restores each quiz |
+| `Tests/` | Routing and storage tests |
+| `scripts/fetch-sources.sh` | Builds `Web/` from the pinned sources |
+| `project.yml` | XcodeGen project (the `.xcodeproj` is generated, not committed) |
+| `.github/workflows/ios.yml` | CI: fetch, test, archive, IPA artifact |
+
+## Not done yet
+
+- Native UI for the quizzes (for now the menu opens the web versions).
+- A viewer for the history beyond the simple list.
+- Automatic updates for NeoValues (the bundled commit is fixed).

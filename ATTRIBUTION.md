@@ -1,31 +1,24 @@
-# Attribution, credits, and licenses
+# Attribution and credits
 
 ## NeoValues
 
-- **Original work:** NeoValues, an original political ideology test, by **neomediavalist**.
-  https://github.com/neomediavalist/neovalues
-- **Fork used as the source:** https://github.com/zore0010/neovalues
+- **Original work:** NeoValues by **neomediavalist**. https://github.com/neomediavalist/neovalues
+- **Bundled from:** the fork https://github.com/zore0010/neovalues at commit `b8dce4ef53d507763baddd7bcb634bcccd31eb88`.
 - **License:** Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0).
   Legal code: https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-- The upstream project changed from the MIT license to CC BY-NC-SA 4.0 at version 1.0. Copies made
-  before that change remain under MIT.
+- The upstream project was MIT licensed before version 1.0. Copies made before that change remain under MIT.
 - Icons carry their own licenses and credits, listed with their sources in the NeoValues data.
 
-## 12 Axes
+## 12Axes
 
-- **Original work:** 12 Axes, a political quiz, by **Enzo Xavier Santos**. Copyright (c) 2026, all rights
-  reserved.
-  Project repository: https://github.com/zore0010/12axes
-  Inspiration for the model: https://politicaltests.github.io/12axes/
-- **Terms:** the project is source-available, not open source. This app uses its questions, profiles, and
-  data under the written permission described in `PERMISSIONS.md`: personal, non-commercial use, including
-  copying the questions, profiles, and data into this app, keeping English translations of them, and
-  calling the project's public API, subject to its origin restrictions.
-- **Conditions:** keep this credit; no commercial use; no distribution of this app beyond personal use.
+- **Original work:** the 12Axes quiz in the politicaltests project, copyright (c) 2020 8values (SapplyValues).
+  https://github.com/politicaltests/politicaltests.github.io
+- **Bundled from:** the `12axes` folder at commit `5a508de557cc88eb7e9a44d89f45501dbe912d61`.
+- **License:** MIT. The full license text is bundled with the quiz at `tests/axes/LICENSE-MIT.txt`.
 
-## What this app changes
+## What this app adds
 
-- A native SwiftUI app with a menu for both tests.
-- Data is bundled in the app and used on the device.
-- English translations of the 12 Axes questions and profiles, made for this app.
-- The app's own code and documentation are original work for this app.
+- The native menu, the WebView screens, the `app://` scheme handler, and the storage of progress and results.
+- `App/OverlayScript.swift`, which saves and restores each quiz. It wraps the quizzes' own functions and does not
+  edit their files.
+- The tests, scripts, and documentation in this repository.
