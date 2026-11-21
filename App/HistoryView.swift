@@ -2,65 +2,61 @@ import SwiftUI
 
 struct HistoryView: View {
     let test: TestDefinition
-    @State private var entries: [ProgressStore.HistoryEntry] = []
+    @ObservedObject private var results = ResultStore.shared
+    @State private var files: [URL] = []
 
     var body: some View {
         List {
-            if entries.isEmpty {
-                Text("No completed results yet.")
+            if files.isEmpty {
+                Text("No finished results yet.")
                     .foregroundStyle(.secondary)
             }
 
-            ForEach(entries) { entry in
-                VStack(alignment: .leading, spacing: 6) {
-                    Text(entry.date.formatted(date: .abbreviated, time: .shortened))
-                        .font(.headline)
-                    Text(ResultSummary.text(for: entry.payload))
-                        .font(.footnote)
-                        .foregroundStyle(.secondary)
+            ForEach(files, id: \.self) { url in
+                NavigationLink {
+                    ResultDetailView(url: url)
+                } label: {
+                    Text(ResultStore.date(for: url).map { ResultFormat.displayDate($0) } ?? url.lastPathComponent)
                 }
-                .padding(.vertical, 2)
             }
-            .onDelete(perform: delete)
+            .onDelete { offsets in
+                for index in offsets {
+                    results.delete(files[index])
+                }
+                files = ResultStore.files(for: test.id)
+            }
         }
-        .navigationTitle(test.title + " results")
-        .onAppear(perform: reload)
-    }
-
-    private func reload() {
-        entries = ProgressStore.history(for: test.id)
-    }
-
-    private func delete(at offsets: IndexSet) {
-        for index in offsets {
-            try? ProgressStore.deleteEntry(entries[index], for: test.id)
+        .navigationTitle(test.title)
+        .onAppear {
+            files = ResultStore.files(for: test.id)
         }
-        reload()
+        .onChange(of: results.counts[test.id]) { _ in
+            files = ResultStore.files(for: test.id)
+        }
     }
 }
 
-/// A short, readable line for each saved result.
-enum ResultSummary {
-    static func text(for payload: String) -> String {
-        guard let data = payload.data(using: .utf8),
-              let object = try? JSONSerialization.jsonObject(with: data) as? [String: Any] else {
-            return "Saved result"
-        }
+/// Shows one saved result as the text stored in its file, with a share button.
+struct ResultDetailView: View {
+    let url: URL
 
-        // NeoValues: category -> chosen value.
-        if let results = object["results"] as? [String: Any] {
-            return results.keys.sorted().map { key -> String in
-                key + ": " + String(describing: results[key] ?? "")
-            }.joined(separator: "\n")
+    var body: some View {
+        ScrollView {
+            Text(text)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding()
+                .textSelection(.enabled)
         }
-
-        // 12 Axes: the result page's query string holds one score per axis.
-        if let query = object["query"] as? String,
-           let components = URLComponents(string: "https://localhost/results" + query),
-           let items = components.queryItems, !items.isEmpty {
-            return items.map { $0.name + ": " + ($0.value ?? "") }.joined(separator: "  ")
+        .navigationTitle("Result")
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                ShareLink(item: url)
+            }
         }
+    }
 
-        return "Saved result"
+    private var text: String {
+        (try? String(contentsOf: url, encoding: .utf8)) ?? "This result could not be read."
     }
 }

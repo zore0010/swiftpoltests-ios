@@ -2,7 +2,7 @@ import SwiftUI
 import UIKit
 import WebKit
 
-/// One quiz in a WKWebView. Connects the page to ProgressStore through the overlay script.
+/// One quiz in a WKWebView. Connects the page to the stores through the overlay script.
 struct TestWebView: UIViewRepresentable {
     let test: TestDefinition
     let webRoot: URL
@@ -62,16 +62,16 @@ struct TestWebView: UIViewRepresentable {
 
             switch type {
             case "load":
-                // Hand the saved progress (or null) back to the quiz page.
-                let saved = ProgressStore.loadProgress(test.id) ?? "null"
+                // Hand the saved state (or null) back to the quiz page.
+                let saved = ProgressStore.load(test.id)?.state ?? "null"
                 webView?.evaluateJavaScript("window.wkwvRestore(" + saved + ");", completionHandler: nil)
             case "save":
                 if let payload = body["payload"] as? String {
-                    try? ProgressStore.saveProgress(payload, for: test.id)
+                    try? ProgressStore.save(state: payload, for: test.id)
                 }
             case "complete":
                 if let payload = body["payload"] as? String {
-                    try? ProgressStore.recordCompletion(payload, for: test.id)
+                    try? ResultStore.shared.complete(payload: payload, for: test)
                 }
             default:
                 break

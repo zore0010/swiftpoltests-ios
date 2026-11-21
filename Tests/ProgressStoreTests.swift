@@ -6,43 +6,59 @@ final class ProgressStoreTests: XCTestCase {
 
     override func tearDown() {
         ProgressStore.removeAll(for: testID)
+        try? FileManager.default.removeItem(at: ResultStore.rootFolder.appendingPathComponent(testID, isDirectory: true))
         super.tearDown()
     }
 
-    func testProgressIsSavedLoadedAndCleared() throws {
-        XCTAssertNil(ProgressStore.loadProgress(testID))
-        try ProgressStore.saveProgress(#"{"qn":3}"#, for: testID)
-        XCTAssertEqual(ProgressStore.loadProgress(testID), #"{"qn":3}"#)
-        XCTAssertTrue(ProgressStore.hasProgress(testID))
+    func testSaveLoadClear() throws {
+        XCTAssertNil(ProgressStore.load(testID))
+        try ProgressStore.save(state: #"{"qn":3}"#, for: testID)
+        XCTAssertEqual(ProgressStore.load(testID)?.state, #"{"qn":3}"#)
+        ProgressStore.clear(testID)
+        XCTAssertNil(ProgressStore.load(testID))
+    }
 
-        ProgressStore.clearProgress(testID)
-        XCTAssertNil(ProgressStore.loadProgress(testID))
+    func testSessionKeepsItsIdAcrossSaves() throws {
+        try ProgressStore.save(state: #"{"qn":1}"#, for: testID)
+        let first = ProgressStore.load(testID)
+        try ProgressStore.save(state: #"{"qn":2}"#, for: testID)
+        let second = ProgressStore.load(testID)
+        XCTAssertEqual(first?.id, second?.id)
+        XCTAssertEqual(first?.startedAt, second?.startedAt)
+        XCTAssertEqual(second?.state, #"{"qn":2}"#)
     }
 
     func testInvalidJSONIsRejected() {
-        XCTAssertThrowsError(try ProgressStore.saveProgress("not json", for: testID))
-        XCTAssertThrowsError(try ProgressStore.recordCompletion("{broken", for: testID))
+        XCTAssertThrowsError(try ProgressStore.save(state: "not json", for: testID))
     }
 
-    func testCompletionGoesToHistoryNewestFirstAndClearsProgress() throws {
-        try ProgressStore.saveProgress(#"{"qn":1}"#, for: testID)
-        try ProgressStore.recordCompletion(#"{"query":"?a=50"}"#, for: testID)
-        try ProgressStore.recordCompletion(#"{"query":"?a=60"}"#, for: testID)
+    func testFinishingWritesAReadableFileAndClearsProgress() throws {
+        let test = TestDefinition(id: testID, title: "Test", subtitle: "", entryPage: "index.html", credits: "", license: "")
+        try ProgressStore.save(state: #"{"qn":1}"#, for: testID)
+        try ResultStore.shared.complete(payload: #"{"query":"?a=50&b=60"}"#, for: test)
+        XCTAssertNil(ProgressStore.load(testID))
 
-        let history = ProgressStore.history(for: testID)
-        XCTAssertEqual(history.count, 2)
-        XCTAssertEqual(history[0].payload, #"{"query":"?a=60"}"#)
-        XCTAssertNil(ProgressStore.loadProgress(testID))
+        let files = ResultStore.files(for: testID)
+        XCTAssertEqual(files.count, 1)
+        let text = try String(contentsOf: files[0], encoding: .utf8)
+        XCTAssertTrue(text.hasPrefix("# Test"))
+        XCTAssertTrue(text.contains("- fed: 50"))
+        XCTAssertTrue(text.contains("- dem: 60"))
     }
 
-    func testDeletingAnEntryKeepsTheOthers() throws {
-        try ProgressStore.recordCompletion(#"{"query":"?a=1"}"#, for: testID)
-        try ProgressStore.recordCompletion(#"{"query":"?a=2"}"#, for: testID)
-        let history = ProgressStore.history(for: testID)
+    func testNeoValuesLinesFollowTheQuizOrder() throws {
+        let payload = #"{"results":{"culture":"civil_liberalism","economics":"laissez_faire"}}"#
+        let lines = try ResultFormat.lines(payload: payload)
+        XCTAssertEqual(lines, ["Economics: Laissez faire", "Culture: Civil liberalism"])
+    }
 
-        try ProgressStore.deleteEntry(history[0], for: testID)
-        let remaining = ProgressStore.history(for: testID)
-        XCTAssertEqual(remaining.count, 1)
-        XCTAssertEqual(remaining[0].payload, #"{"query":"?a=1"}"#)
+    func testAxesLinesUseAxisCodes() throws {
+        let lines = try ResultFormat.lines(payload: #"{"query":"?a=50&l=80"}"#)
+        XCTAssertEqual(lines, ["fed: 50", "acc: 80"])
+    }
+
+    func testFileNameDateRoundTrips() {
+        let url = URL(fileURLWithPath: "/x/" + ResultStore.fileNamePrefix(for: Date()) + " abcd.md")
+        XCTAssertNotNil(ResultStore.date(for: url))
     }
 }

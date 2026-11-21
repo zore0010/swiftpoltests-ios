@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct MenuView: View {
+    @ObservedObject private var results = ResultStore.shared
     @State private var pendingTest: TestDefinition?
     @State private var openTest: TestDefinition?
 
@@ -12,7 +13,7 @@ struct MenuView: View {
                         Button {
                             choose(test)
                         } label: {
-                            TestRow(test: test)
+                            TestRow(test: test, unfinished: results.unfinished.contains(test.id))
                         }
                     }
                 }
@@ -22,8 +23,7 @@ struct MenuView: View {
                         NavigationLink {
                             HistoryView(test: test)
                         } label: {
-                            Label("\(test.title) (\(ProgressStore.history(for: test.id).count))",
-                                  systemImage: "clock")
+                            Label("\(test.title) (\(results.counts[test.id] ?? 0))", systemImage: "clock")
                         }
                     }
                 }
@@ -35,6 +35,12 @@ struct MenuView: View {
                 }
             }
             .navigationTitle("Political Tests")
+            .onAppear {
+                results.reload()
+            }
+            .onChange(of: openTest?.id) { _ in
+                results.reload()
+            }
             .confirmationDialog(
                 pendingTest.map { "\($0.title): unfinished answers" } ?? "Unfinished answers",
                 isPresented: Binding(
@@ -49,7 +55,7 @@ struct MenuView: View {
                 }
                 Button("Start over", role: .destructive) {
                     if let test = pendingTest {
-                        ProgressStore.clearProgress(test.id)
+                        ProgressStore.clear(test.id)
                     }
                     openTest = pendingTest
                     pendingTest = nil
@@ -66,9 +72,9 @@ struct MenuView: View {
         }
     }
 
-    /// Tests with unfinished answers ask first, so a misclick never throws progress away.
+    /// Tests with an unfinished session ask first, so a misclick never throws progress away.
     private func choose(_ test: TestDefinition) {
-        if ProgressStore.hasProgress(test.id) {
+        if ProgressStore.load(test.id) != nil {
             pendingTest = test
         } else {
             openTest = test
@@ -78,13 +84,14 @@ struct MenuView: View {
 
 struct TestRow: View {
     let test: TestDefinition
+    let unfinished: Bool
 
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
             HStack {
                 Text(test.title)
                     .font(.headline)
-                if ProgressStore.hasProgress(test.id) {
+                if unfinished {
                     Spacer()
                     Text("In progress")
                         .font(.caption)
