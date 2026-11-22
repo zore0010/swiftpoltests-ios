@@ -1,5 +1,8 @@
 # Legal Notice & Disclaimer / Thông báo Pháp lý & Tuyên bố Miễn trừ Trách nhiệm
 
+Last updated: 22 November 2026.
+Cập nhật lần cuối: Ngày 22 Tháng 11 Năm 2026.
+
 [English](#english) | [Tiếng Việt](#tiếng-việt)
 
 ---
