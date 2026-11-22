@@ -1,0 +1,8 @@
+{
+  "ideologies": [
+    "National-Socialism", "Nazi-Maoism", "Volkism",
+    "Italian Fascism", "Agrarian Fascism", "Clerical Fascism", "Techno-Fascism", "Ecofascism"
+  ],
+  "values": ["racial_nationalism"],
+  "removeFiles": ["changelog.html", "icons/nation/racial_nationalism.svg"]
+}
