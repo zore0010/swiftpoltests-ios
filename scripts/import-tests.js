@@ -53,9 +53,69 @@ function sanitizeHtml(html) {
     .replace(/<noscript\b[^>]*>[\s\S]*?<\/noscript>/gi, (all) => (ANALYTICS.test(all) ? '' : all));
 }
 
-// ---------- 2. bundling ----------
-const fontMap = new Map();
 
+// ---------- 1b. paths ----------
+// Upstream pages use absolute paths (/auth/style.css) and paths that climb out of the quiz folder (../icons/x.png).
+// Under app://<id>/ both break, so they become paths relative to the file.
+// The 10Groups pages ask for two compass images that the repository does not contain; the one it does contain is used.
+const REPLACE = {
+  axes: [['icon/12axes.png', 'icons/12axes.png']],          // the instructions page says icon/, the folder is icons/
+  '10groups': [['blankcompass.png', 'compassimage.png'], ['./compass.png', './compassimage.png']],
+};
+
+function fixPaths(testRoot, id) {
+  for (const file of textFiles(testRoot)) {
+    const up = path.relative(path.dirname(file), testRoot).split(path.sep).join('/');
+    const join = (p) => (up ? `${up}/${p}` : p);
+    const fix = (ref) => {
+      if (ref.startsWith('/') && !ref.startsWith('//')) {
+        let p = ref.slice(1);
+        if (p.startsWith(`${id}/`)) p = p.slice(id.length + 1);
+        return join(p);
+      }
+      if (ref.startsWith('../')) {
+        const target = path.normalize(path.join(path.dirname(file), ref));
+        if (!target.startsWith(testRoot + path.sep)) return join(ref.replace(/^(\.\.\/)+/, ''));
+      }
+      return ref;
+    };
+    let text = fs.readFileSync(file, 'utf8');
+    text = text.replace(/(\s(?:src|href)\s*=\s*)(["'])([^"']*)\2/gi, (all, lead, q, ref) => lead + q + fix(ref) + q);
+    text = text.replace(/url\((["']?)([^)"']+)\1\)/gi, (all, q, ref) => `url(${q}${fix(ref)}${q})`);
+    for (const [from, to] of REPLACE[id] || []) text = text.split(from).join(to);
+    fs.writeFileSync(file, text);
+  }
+}
+
+// Files the upstream repositories do not contain. Each is listed with the file that names it.
+// Favicon links (rel="icon") are not checked: a missing favicon only changes the browser tab, which the app does not show.
+const KNOWN_MISSING = new Set([]);
+
+// Every local src, href and url() must resolve to a file in the bundle.
+function checkLocalReferences(testRoot, id) {
+  const problems = [];
+  for (const file of textFiles(testRoot)) {
+    const text = fs.readFileSync(file, 'utf8');
+    const refs = [];
+    for (const m of text.matchAll(/<(img|script|link|iframe|source)\b([^>]*)>/gi)) {
+      if (/^link$/i.test(m[1]) && /\brel\s*=\s*["'][^"']*icon/i.test(m[2])) continue;
+      const attr = m[2].match(/\b(?:src|href)\s*=\s*["']([^"']+)["']/i);
+      if (attr) refs.push(attr[1]);
+    }
+    for (const m of text.matchAll(/url\(\s*["']?([^"')]+)["']?\s*\)/gi)) refs.push(m[1]);
+    for (const ref of refs) {
+      if (/^(https?:|data:|mailto:|javascript:|#)/i.test(ref)) continue;
+      const clean = ref.split('#')[0].split('?')[0];
+      if (!clean) continue;
+      const target = path.normalize(path.join(path.dirname(file), clean));
+      const key = `${id}/${path.relative(testRoot, file)}|${clean}`;
+      if (!fs.existsSync(target) && !KNOWN_MISSING.has(key)) problems.push(`${id}/${path.relative(testRoot, file)}: missing ${clean}`);
+    }
+  }
+  if (problems.length) throw new Error('local files referenced but not in the bundle:\n  ' + problems.join('\n  '));
+}
+
+// ---------- 2. bundling ----------
 function download(url, dest) {
   fs.mkdirSync(path.dirname(dest), { recursive: true });
   execFileSync('curl', ['-sSfL', '-A', UA, '-o', dest, url], { stdio: 'inherit' });
@@ -103,14 +163,17 @@ function buildVendor() {
   fs.writeFileSync(path.join(CACHE, 'fonts.json'), JSON.stringify([...fontMap]));
   fs.writeFileSync(path.join(CACHE, 'done'), '');
 }
+const fontMap = new Map();
 
 // Relative path from a file to the test's vendor folder.
 function vendorPrefix(file, testRoot) {
-  return path.relative(path.dirname(file), path.join(testRoot, 'vendor')).split(path.sep).join('/');
+  const rel = path.relative(path.dirname(file), path.join(testRoot, 'vendor'));
+  return rel.split(path.sep).join('/');
 }
 
 function bundleInto(testRoot) {
-  fs.cpSync(path.join(CACHE, 'vendor'), path.join(testRoot, 'vendor'), { recursive: true });
+  const vendor = path.join(CACHE, 'vendor');
+  fs.cpSync(vendor, path.join(testRoot, 'vendor'), { recursive: true });
   for (const file of textFiles(testRoot)) {
     let text = fs.readFileSync(file, 'utf8');
     const prefix = vendorPrefix(file, testRoot);
@@ -183,11 +246,13 @@ for (const id of TESTS) {
     if (/\.html?$/i.test(file)) fs.writeFileSync(file, sanitizeHtml(fs.readFileSync(file, 'utf8')));
   }
   for (const f of listFiles(testRoot)) if (/google[0-9a-f]{10,}\.html$/i.test(f)) fs.rmSync(f);
+  fixPaths(testRoot, id);
   if (!noNet) {
     buildVendor();
     bundleInto(testRoot);
   }
   removeFascistIdeologies(testRoot);
   if (!noNet) verify(testRoot);
+  checkLocalReferences(testRoot, id);
   console.log(`prepared tests/${id}`);
 }
