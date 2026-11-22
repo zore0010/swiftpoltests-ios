@@ -40,6 +40,12 @@ The application is intended to be used in full compliance with applicable laws a
 ### 8. Disclaimer
 This notice describes the intended purpose and nature of the application. It does not constitute a legal guarantee, immunity from legal proceedings, or a waiver of any applicable legal responsibilities.
 
+### 9. Contact Information
+
+For inquiries concerning this application, its content, attribution, copyright, or other related matters, please contact:
+
+Email: zore4913@proton.me
+
 ---
 
 ## Tiếng Việt
@@ -77,3 +83,9 @@ Mọi bản quyền, giấy phép và yêu cầu ghi nhận nguồn gốc hiện
 
 ### 8. Tuyên bố Miễn trừ
 Thông báo này mô tả mục đích dự kiến và bản chất của ứng dụng, không cấu thành sự bảo đảm pháp lý, quyền miễn trừ truy cứu trách nhiệm pháp lý hay sự từ bỏ bất kỳ nghĩa vụ pháp lý hiện hành nào.
+
+### 9. Thông tin liên hệ
+
+Để được giải đáp thắc mắc về ứng dụng này, nội dung, nguồn gốc, bản quyền hoặc các vấn đề liên quan khác, vui lòng liên hệ:
+
+Email: zore4913@proton.me
