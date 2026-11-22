@@ -22,6 +22,12 @@ struct AboutView: View {
                 Text("Shared under CC BY-NC-SA 4.0. Credit the authors listed here, and share any changes under the same license.")
                 Text("Your answers are saved on this device after every question. An unfinished test can be resumed, and finished results are kept under Saved results.")
             }
+
+            Section("Legal") {
+                NavigationLink("Privacy policy and legal notice") {
+                    LegalView()
+                }
+            }
         }
         .navigationTitle("About")
         .navigationBarTitleDisplayMode(.inline)

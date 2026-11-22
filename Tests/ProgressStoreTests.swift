@@ -35,15 +35,14 @@ final class ProgressStoreTests: XCTestCase {
     func testFinishingWritesAReadableFileAndClearsProgress() throws {
         let test = TestDefinition(id: testID, title: "Test", subtitle: "", entryPage: "index.html", credits: "", license: "")
         try ProgressStore.save(state: #"{"qn":1}"#, for: testID)
-        try ResultStore.shared.complete(payload: #"{"query":"?a=50&b=60"}"#, for: test)
+        try ResultStore.shared.complete(payload: #"{"results":{"economics":"laissez_faire"}}"#, for: test)
         XCTAssertNil(ProgressStore.load(testID))
 
         let files = ResultStore.files(for: testID)
         XCTAssertEqual(files.count, 1)
         let text = try String(contentsOf: files[0], encoding: .utf8)
         XCTAssertTrue(text.hasPrefix("# Test"))
-        XCTAssertTrue(text.contains("- fed: 50"))
-        XCTAssertTrue(text.contains("- dem: 60"))
+        XCTAssertTrue(text.contains("- Economics: Laissez faire"))
     }
 
     func testNeoValuesLinesFollowTheQuizOrder() throws {
@@ -52,9 +51,19 @@ final class ProgressStoreTests: XCTestCase {
         XCTAssertEqual(lines, ["Economics: Laissez faire", "Culture: Civil liberalism"])
     }
 
-    func testAxesLinesUseAxisCodes() throws {
-        let lines = try ResultFormat.lines(payload: #"{"query":"?a=50&l=80"}"#)
-        XCTAssertEqual(lines, ["fed: 50", "acc: 80"])
+    func testAxesLinesAreReadable() throws {
+        let lines = try ResultFormat.lines(payload: #"{"query":"?a=45&b=55"}"#)
+        XCTAssertEqual(lines, [
+            "Structure: Centrist (Federal 45%, Unitary 55%)",
+            "Representation: Centrist (Democracy 55%, Authority 45%)"
+        ])
+    }
+
+    func testAxisBandsMatchTheSource() {
+        let bands = AxesSpec.axes[0].bands
+        XCTAssertEqual(AxesSpec.band(for: 95, bands: bands), "Confederal")
+        XCTAssertEqual(AxesSpec.band(for: 50, bands: bands), "Centrist")
+        XCTAssertEqual(AxesSpec.band(for: 5, bands: bands), "Extremely Centralized")
     }
 
     func testFileNameDateRoundTrips() {

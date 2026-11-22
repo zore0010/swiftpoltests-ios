@@ -36,6 +36,7 @@ final class ResultStore: ObservableObject {
 
     /// Re-reads everything from disk. Called when the menu appears and when a test closes.
     func reload() {
+        Self.upgradeLegacyAxesFiles()
         var newCounts: [String: Int] = [:]
         var newUnfinished: Set<String> = []
         for test in TestCatalog.all {
@@ -86,6 +87,33 @@ final class ResultStore: ObservableObject {
         fileDateFormatter.string(from: date)
     }
 
+    /// Older 12 Axes files listed raw codes such as "- fed: 45". Rewrite them in the readable format.
+    static func upgradeLegacyAxesFiles() {
+        for url in files(for: "axes") {
+            guard let text = try? String(contentsOf: url, encoding: .utf8),
+                  text.contains("\n- fed: ") else { continue }
+
+            var values: [String: Double] = [:]
+            var finished = ""
+            for line in text.components(separatedBy: "\n") {
+                if line.hasPrefix("Finished: ") {
+                    finished = String(line.dropFirst("Finished: ".count))
+                }
+                guard line.hasPrefix("- ") else { continue }
+                let parts = line.dropFirst(2).components(separatedBy: ": ")
+                guard parts.count == 2,
+                      let index = ResultFormat.axesCodes.firstIndex(of: parts[0]),
+                      let value = Double(parts[1]) else { continue }
+                values[ResultFormat.axesLetters[index]] = value
+            }
+            guard !values.isEmpty else { continue }
+
+            let body = ResultFormat.markdownBody(title: "12 Axes", finished: finished,
+                                                 lines: ResultFormat.axesLines(values: values))
+            try? body.write(to: url, atomically: true, encoding: .utf8)
+        }
+    }
+
     private static let fileDateFormatter: DateFormatter = {
         let formatter = DateFormatter()
         formatter.locale = Locale(identifier: "en_US_POSIX")
@@ -102,7 +130,7 @@ enum ResultFormat {
         "foreign", "technology", "social_control", "territorial_organization"
     ]
 
-    /// 12 Axes: the query keys a to l, in order, and the short names the source gives them.
+    /// 12 Axes: the query keys and the short codes that older files used.
     static let axesLetters = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l"]
     static let axesCodes = ["fed", "dem", "glo", "mil", "fre", "equ", "sec", "pro", "mul", "plan", "tra", "acc"]
 
@@ -121,8 +149,12 @@ enum ResultFormat {
     }
 
     static func markdown(title: String, date: Date, lines: [String]) -> String {
+        markdownBody(title: title, finished: displayDate(date), lines: lines)
+    }
+
+    static func markdownBody(title: String, finished: String, lines: [String]) -> String {
         var text = "# " + title + "\n\n"
-        text += "Finished: " + displayDate(date) + "\n\n"
+        text += "Finished: " + finished + "\n\n"
         text += lines.map { "- " + $0 }.joined(separator: "\n") + "\n"
         return text
     }
@@ -136,6 +168,24 @@ enum ResultFormat {
         let spaced = id.replacingOccurrences(of: "_", with: " ")
         guard let first = spaced.first else { return spaced }
         return String(first).uppercased() + spaced.dropFirst()
+    }
+
+    /// One line per axis, for example "Structure: Centrist (Federal 45%, Unitary 55%)".
+    static func axesLines(values: [String: Double]) -> [String] {
+        var lines: [String] = []
+        for axis in AxesSpec.axes {
+            guard let score = values[axis.letter] else { continue }
+            let band = AxesSpec.band(for: score, bands: axis.bands)
+            let left = axis.left + " " + percent(score)
+            let right = axis.right + " " + percent(100 - score)
+            let label = band.isEmpty ? axis.name : axis.name + ": " + band
+            lines.append(label + " (" + left + ", " + right + ")")
+        }
+        return lines
+    }
+
+    private static func percent(_ value: Double) -> String {
+        String(format: "%g", value) + "%"
     }
 
     private static func neovaluesLines(_ object: [String: Any]) throws -> [String] {
@@ -155,17 +205,13 @@ enum ResultFormat {
               let items = components.queryItems else {
             throw ResultError.unreadable
         }
-        var values: [String: String] = [:]
+        var values: [String: Double] = [:]
         for item in items {
-            values[item.name] = item.value ?? ""
-        }
-        var lines: [String] = []
-        for index in 0..<min(axesLetters.count, axesCodes.count) {
-            if let value = values[axesLetters[index]] {
-                lines.append(axesCodes[index] + ": " + value)
+            if let value = Double(item.value ?? "") {
+                values[item.name] = value
             }
         }
-        return lines
+        return axesLines(values: values)
     }
 
     private static let displayFormatter: DateFormatter = {
