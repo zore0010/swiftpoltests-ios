@@ -24,6 +24,4 @@ The app is not intended for children under 16.
 
 ## Contact
 
-[Add a contact email before publishing.]
-
-This is a plain-language summary and not legal advice.
+Email: zore4913@proton.me
