@@ -23,15 +23,15 @@ struct HistoryView: View {
                 for index in offsets {
                     results.delete(files[index])
                 }
-                files = ResultStore.files(for: test.id)
+                files = ResultStore.files(for: test.resultsFolder)
             }
         }
         .navigationTitle(test.title)
         .onAppear {
-            files = ResultStore.files(for: test.id)
+            files = ResultStore.files(for: test.resultsFolder)
         }
         .onChange(of: results.counts[test.id]) { _ in
-            files = ResultStore.files(for: test.id)
+            files = ResultStore.files(for: test.resultsFolder)
         }
     }
 }

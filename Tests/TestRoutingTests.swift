@@ -6,7 +6,8 @@ final class TestRoutingTests: XCTestCase {
     private let known: Set<String> = ["neovalues", "axes"]
 
     func testStartURLIsTheEntryPageOfTheTest() {
-        XCTAssertEqual(TestRouting.startURL(for: TestCatalog.all[0]).absoluteString, "app://neovalues/index.html")
+        let web = TestCatalog.all.first { $0.id == "neovalues" }!
+        XCTAssertEqual(TestRouting.startURL(for: web).absoluteString, "app://neovalues/index.html")
     }
 
     func testRequestMapsIntoTheTestFolder() {

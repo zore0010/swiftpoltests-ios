@@ -4,7 +4,7 @@ struct AboutView: View {
     var body: some View {
         List {
             Section("Tests") {
-                ForEach(TestCatalog.all) { test in
+                ForEach(TestCatalog.primary) { test in
                     VStack(alignment: .leading, spacing: 6) {
                         Text(test.title)
                             .font(.headline)
@@ -19,7 +19,7 @@ struct AboutView: View {
             }
 
             Section("This app") {
-                Text("Shared under CC BY-NC-SA 4.0. Credit the authors listed here, and share any changes under the same license.")
+                Text("The code and documentation of this app are shared under CC BY-NC-SA 4.0. NeoValues is CC BY-NC-SA 4.0 by its author, and 12Axes is under the MIT License. Credit the authors listed here, and share changes under the same license where it requires that.")
                 Text("Your answers are saved on this device after every question. An unfinished test can be resumed, and finished results are kept under Saved results.")
             }
 

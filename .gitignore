@@ -6,5 +6,10 @@
 build/
 DerivedData/
 
+# Built by scripts/fetch-sources.sh
+/Web/
+/Generated/
+/Tests/neovalues-golden.json
+
 # macOS
 .DS_Store

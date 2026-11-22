@@ -40,7 +40,7 @@ final class ResultStore: ObservableObject {
         var newCounts: [String: Int] = [:]
         var newUnfinished: Set<String> = []
         for test in TestCatalog.all {
-            newCounts[test.id] = Self.files(for: test.id).count
+            newCounts[test.id] = Self.files(for: test.resultsFolder).count
             if ProgressStore.load(test.id) != nil {
                 newUnfinished.insert(test.id)
             }
@@ -63,10 +63,18 @@ final class ResultStore: ObservableObject {
     /// Writes a finished quiz as a Markdown file, then clears the unfinished session for that test.
     func complete(payload: String, for test: TestDefinition) throws {
         let lines = try ResultFormat.lines(payload: payload)
-        let date = Date()
-        let text = ResultFormat.markdown(title: test.title, date: date, lines: lines)
+        try save(lines: lines, date: Date(), for: test)
+    }
+
+    /// Writes a finished native quiz the same way, from lines it has already built.
+    func completeNative(lines: [String], for test: TestDefinition) throws {
+        try save(lines: lines, date: Date(), for: test)
+    }
+
+    private func save(lines: [String], date: Date, for test: TestDefinition) throws {
+        let text = ResultFormat.markdown(title: test.resultsTitle, date: date, lines: lines)
         let name = Self.fileNamePrefix(for: date) + " " + ProgressStore.newID() + ".md"
-        let url = try Self.folder(for: test.id).appendingPathComponent(name)
+        let url = try Self.folder(for: test.resultsFolder).appendingPathComponent(name)
         try text.write(to: url, atomically: true, encoding: .utf8)
         ProgressStore.clear(test.id)
         reload()

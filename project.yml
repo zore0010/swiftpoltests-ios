@@ -25,6 +25,9 @@ targets:
         excludes:
           - "**/.git"
           - "**/.DS_Store"
+      # Built by scripts/fetch-sources.sh: the native NeoValues data and the legal documents.
+      - path: Generated
+        type: folder
     info:
       path: App/Info.plist
       properties:
