@@ -54,6 +54,8 @@ cp -R "$WORK/politicaltests/12axes/." "$OUT/tests/axes/"
 cp -R "$WORK/politicaltests/auth/." "$OUT/tests/auth/"
 cp -R "$WORK/politicaltests/inf/." "$OUT/tests/inf/"
 for t in axes auth inf; do cp "$WORK/politicaltests/LICENSE" "$OUT/tests/$t/LICENSE-MIT.txt"; done
+# The shared icons folder of the repository: the quizzes refer to it as ../icons/.
+for t in axes auth inf; do cp -R "$WORK/politicaltests/icons" "$OUT/tests/$t/icons"; done
 
 # RightValues (MIT).
 clone https://github.com/rightvaluestest/rightvaluestest.github.io e655d615423757c9d207c4542274e35603b28873 rightvalues
@@ -91,7 +93,7 @@ copy_root mytests mytests
 cp "$WORK/mytests/LICENSE" "$OUT/tests/mytests/LICENSE.txt"
 
 # Remove analytics and ads, bundle every script, stylesheet and font, remove the fascist ideologies,
-# and fail if anything external is left.
+# fix the paths, and fail if anything external or missing is left.
 node scripts/import-tests.js "$OUT"
 
 echo "Bundled NeoValues at $NEOVALUES_COMMIT (filtered), the politicaltests quizzes at $AXES_COMMIT, and the other imported quizzes into $OUT"
