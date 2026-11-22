@@ -1,5 +1,5 @@
 import XCTest
-@testable import WKWVTests
+@testable import SwiftPolTest
 
 final class ProgressStoreTests: XCTestCase {
     private let testID = "test-" + UUID().uuidString

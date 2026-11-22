@@ -1,14 +1,15 @@
-# Political Tests
+# Political Tests (SwiftPolTest)
 
-An iOS app with two political-values quizzes behind one menu:
+An iOS app with two political-values quizzes behind one menu, built in SwiftUI with WebKit quiz pages:
 
 - **NeoValues**, bundled from the fork of neomediavalist's project.
 - **12 Axes**, the MIT-licensed quiz from the politicaltests project.
 
 Both save every answer as you go. An unfinished quiz can be resumed after a misclick or a restart, and each
-finished result is kept under Saved results.
+finished result is saved as a readable Markdown file in Files > Political Tests.
 
-License: CC BY-NC-SA 4.0 for this project. Credits and the MIT notices are in `ATTRIBUTION.md` and in the app's About screen.
+License: CC BY-NC-SA 4.0 for this project. Credits and the MIT notices are in `ATTRIBUTION.md` and in the app's
+About screen. Privacy policy and legal notice: `PRIVACY.md` and `LEGAL_NOTICE.md`.
 
 ## How the quizzes are built
 
@@ -20,7 +21,7 @@ and wraps the quiz's own functions to save and restore state.
 
 ## Build
 
-CI (push to `main`, or run the iOS workflow by hand) produces an unsigned `WKWVTests-unsigned-ipa` artifact.
+CI (push to `main`, or run the iOS workflow by hand) produces an unsigned `SwiftPolTest-unsigned-ipa` artifact.
 If a step fails, the errors are listed on the run's summary page.
 
 Locally (macOS only):
@@ -29,22 +30,23 @@ Locally (macOS only):
 bash scripts/fetch-sources.sh Web
 brew install xcodegen
 xcodegen generate
-open WKWVTests.xcodeproj
+open SwiftPolTest.xcodeproj
 ```
 
 ## Layout
 
 | Path | Purpose |
 | --- | --- |
-| `App/` | SwiftUI menu, WebView screen, scheme handler, progress and history storage, About screen |
+| `App/` | SwiftUI menu, WebView screen, scheme handler, progress and result storage, About and legal screens |
 | `App/OverlayScript.swift` | The overlay that saves and restores each quiz |
+| `App/AxesSpec.swift` | The 12 Axes names, poles, and score bands |
 | `Tests/` | Routing and storage tests |
 | `scripts/fetch-sources.sh` | Builds `Web/` from the pinned sources |
 | `project.yml` | XcodeGen project (the `.xcodeproj` is generated, not committed) |
 | `.github/workflows/ios.yml` | CI: fetch, test, archive, IPA artifact |
 
-## Not done yet
+## Naming
 
-- Native UI for the quizzes (for now the menu opens the web versions).
-- A viewer for the history beyond the simple list.
-- Automatic updates for NeoValues (the bundled commit is fixed).
+The project was called WKWVTests while it used WebKit only. It is now SwiftPolTest, as the native UI replaces the
+WebKit screens. The bundle identifier and the on-device storage folder keep their earlier names, so saved data
+is not lost on update.

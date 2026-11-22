@@ -1,4 +1,4 @@
-name: WKWVTests
+name: SwiftPolTest
 
 options:
   bundleIdPrefix: com.zore
@@ -14,7 +14,7 @@ settings:
     DEVELOPMENT_TEAM: ""
 
 targets:
-  WKWVTests:
+  SwiftPolTest:
     type: application
     platform: iOS
     sources:
@@ -41,29 +41,30 @@ targets:
         LSSupportsOpeningDocumentsInPlace: true
     settings:
       base:
+        # Kept from the earlier builds, so the app keeps its saved data on the phone.
         PRODUCT_BUNDLE_IDENTIFIER: com.zore.wkwvtests
         GENERATE_INFOPLIST_FILE: NO
         TARGETED_DEVICE_FAMILY: "1"
 
-  WKWVTestsTests:
+  SwiftPolTestTests:
     type: bundle.unit-test
     platform: iOS
     sources:
       - path: Tests
     dependencies:
-      - target: WKWVTests
+      - target: SwiftPolTest
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.zore.wkwvtests.tests
-        TEST_HOST: "$(BUILT_PRODUCTS_DIR)/WKWVTests.app/WKWVTests"
+        TEST_HOST: "$(BUILT_PRODUCTS_DIR)/SwiftPolTest.app/SwiftPolTest"
         BUNDLE_LOADER: "$(TEST_HOST)"
 
 schemes:
-  WKWVTests:
+  SwiftPolTest:
     build:
       targets:
-        WKWVTests: all
-        WKWVTestsTests: [test]
+        SwiftPolTest: all
+        SwiftPolTestTests: [test]
     test:
       targets:
-        - WKWVTestsTests
+        - SwiftPolTestTests

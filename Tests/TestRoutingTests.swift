@@ -1,5 +1,5 @@
 import XCTest
-@testable import WKWVTests
+@testable import SwiftPolTest
 
 final class TestRoutingTests: XCTestCase {
     private let webRoot = URL(fileURLWithPath: "/tmp/wkwv-web", isDirectory: true)

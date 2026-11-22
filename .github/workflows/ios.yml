@@ -40,8 +40,8 @@ jobs:
           set -o pipefail
           mkdir -p build
           xcodebuild test \
-            -project WKWVTests.xcodeproj \
-            -scheme WKWVTests \
+            -project SwiftPolTest.xcodeproj \
+            -scheme SwiftPolTest \
             -destination 'platform=iOS Simulator,name=iPhone 16,OS=latest' \
             CODE_SIGNING_ALLOWED=NO 2>&1 | tee build/test.log
 
@@ -50,23 +50,23 @@ jobs:
           set -o pipefail
           mkdir -p build
           xcodebuild archive \
-            -project WKWVTests.xcodeproj \
-            -scheme WKWVTests \
+            -project SwiftPolTest.xcodeproj \
+            -scheme SwiftPolTest \
             -configuration Release \
             -destination 'generic/platform=iOS' \
-            -archivePath build/WKWVTests.xcarchive \
+            -archivePath build/SwiftPolTest.xcarchive \
             CODE_SIGNING_ALLOWED=NO \
             CODE_SIGNING_REQUIRED=NO \
             CODE_SIGN_IDENTITY= 2>&1 | tee build/archive.log
 
       - name: Package unsigned IPA
-        run: bash scripts/package-ipa.sh build/WKWVTests.xcarchive build/WKWVTests-unsigned.ipa
+        run: bash scripts/package-ipa.sh build/SwiftPolTest.xcarchive build/SwiftPolTest-unsigned.ipa
 
       - name: Upload IPA
         uses: actions/upload-artifact@v4
         with:
-          name: WKWVTests-unsigned-ipa
-          path: build/WKWVTests-unsigned.ipa
+          name: SwiftPolTest-unsigned-ipa
+          path: build/SwiftPolTest-unsigned.ipa
           if-no-files-found: error
           retention-days: 14
 
