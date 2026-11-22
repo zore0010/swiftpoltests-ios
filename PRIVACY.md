@@ -12,7 +12,7 @@ It has no accounts, no sign-in, no advertising, no analytics and no tracking. Th
 
 ## Network connections
 
-The native NeoValues quiz does not connect to the internet. The web versions of the quizzes (NeoValues web and 12 Axes) load their fonts from Google Fonts. When they do, Google receives your IP address and the request, under Google's privacy policy. Links to other websites, and the button on the 12 Axes results screen, open in Safari and are governed by those sites' policies.
+The app makes no network connections. Every quiz, script, stylesheet and font it uses is stored inside the app. Links to other websites, such as the links in the descriptions and the button on the 12 Axes results screen, open in Safari and are governed by those sites' policies.
 
 ## Backups
 
