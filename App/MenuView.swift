@@ -19,7 +19,7 @@ struct MenuView: View {
                 }
 
                 Section("Saved results") {
-                    ForEach(TestCatalog.all) { test in
+                    ForEach(TestCatalog.primary) { test in
                         NavigationLink {
                             HistoryView(test: test)
                         } label: {
@@ -112,7 +112,7 @@ struct TestScreen: View {
 
     var body: some View {
         NavigationStack {
-            TestWebView(test: test, webRoot: AppPaths.webRoot)
+            content
                 .navigationTitle(test.title)
                 .navigationBarTitleDisplayMode(.inline)
                 .toolbar {
@@ -122,6 +122,16 @@ struct TestScreen: View {
                         }
                     }
                 }
+        }
+    }
+
+    @ViewBuilder
+    private var content: some View {
+        switch test.kind {
+        case .web:
+            TestWebView(test: test, webRoot: AppPaths.webRoot)
+        case .native:
+            NeoValuesFlow(test: test)
         }
     }
 }
