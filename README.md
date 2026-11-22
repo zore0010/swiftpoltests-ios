@@ -44,9 +44,3 @@ open SwiftPolTest.xcodeproj
 | `scripts/fetch-sources.sh` | Builds `Web/` from the pinned sources |
 | `project.yml` | XcodeGen project (the `.xcodeproj` is generated, not committed) |
 | `.github/workflows/ios.yml` | CI: fetch, test, archive, IPA artifact |
-
-## Naming
-
-The project was called WKWVTests while it used WebKit only. It is now SwiftPolTest, as the native UI replaces the
-WebKit screens. The bundle identifier and the on-device storage folder keep their earlier names, so saved data
-is not lost on update.
