@@ -9,6 +9,12 @@
 - The upstream project was MIT licensed before version 1.0. Copies made before that change remain under MIT.
 - Icons carry their own licenses and credits, listed with their sources in the NeoValues data.
 
+## NeoValues, native version
+
+- The native NeoValues screens port the matching rules in the fork's `results.html` and the question flow in its `quiz.js`.
+  The questions, descriptions and values come from the same pinned fork. `scripts/golden-neovalues.js` runs the original
+  scoring and quiz code to produce the reference results the Swift tests use.
+
 ## 12Axes
 
 - **Original work:** the 12Axes quiz in the politicaltests project, copyright (c) 2020 8values (SapplyValues).
