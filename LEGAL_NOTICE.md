@@ -1,14 +1,12 @@
 # Legal Notice & Disclaimer / Thông báo Pháp lý & Tuyên bố Miễn trừ Trách nhiệm
 
-Last updated: 22 November 2026.
-
-Cập nhật lần cuối: Ngày 22 Tháng 11 Năm 2026.
-
 [English](#english) | [Tiếng Việt](#tiếng-việt)
 
 ---
 
 ## English
+
+Last updated: 23rd November 2026.
 
 ### 1. Purpose of the Application
 This application is an independent, non-commercial personal project developed for educational, informational, and personal research purposes. Its primary purpose is to provide users with access to various political questionnaires, ideological assessments, and political classification frameworks.
@@ -28,7 +26,7 @@ Political classifications are simplified analytical models and may not accuratel
 ### 4. No Political Advocacy or Incitement
 This application is not intended to encourage political violence, discrimination, hatred, unlawful activities, or hostility toward any individual, organization, or group.
 
-The presentation of controversial or radical political theories is strictly for informational and analytical purposes. The developer does not support, promote, or facilitate any reactionary, extremist, or subversive ideologies or activities against the State of the Socialist Republic of Vietnam.
+The presentation of controversial or radical political theories is strictly for informational and analytical purposes. The developer does not support, promote, or facilitate any reactionary, extremist, or subversive ideologies or activities against any state, country, government or political organisation.
 
 ### 5. Third-Party Content and Intellectual Property
 Certain questionnaires, descriptions, classification systems, and other materials may originate from independent third-party projects and their respective authors.
@@ -54,6 +52,8 @@ Email: zore4913@proton.me
 
 ## Tiếng Việt
 
+Cập nhật lần cuối: Ngày 23 Tháng 11 Năm 2026.
+
 ### 1. Mục đích của Ứng dụng
 Ứng dụng này là một dự án cá nhân độc lập, phi thương mại, được phát triển cho mục đích giáo dục, cung cấp thông tin và nghiên cứu cá nhân. Mục tiêu chính của ứng dụng là giúp người dùng tiếp cận các bộ câu hỏi trắc nghiệm chính trị, đánh giá hệ tư tưởng và các khung phân loại khoa học chính trị.
 
@@ -72,7 +72,7 @@ Các hệ thống phân loại chính trị chỉ là những mô hình phân t�
 ### 4. Không Vận động hay Kích động Chính trị
 Ứng dụng này không nhằm mục đích khuyến khích bạo lực chính trị, phân biệt đối xử, thù hận, các hành vi vi phạm pháp luật hoặc thái độ thù địch đối với bất kỳ cá nhân, tổ chức hay nhóm người nào.
 
-Việc trình bày các lý thuyết chính trị gây tranh cãi hoặc mang tính cực đoan hoàn toàn chỉ phục vụ mục đích thông tin và phân tích học thuật. Nhà phát triển không ủng hộ, cổ xúy hay tiếp tay cho bất kỳ tư tưởng hoặc hành vi phản động, cực đoan, chống phá Nhà nước Cộng hòa Xã hội Chủ nghĩa Việt Nam nào.
+Việc trình bày các lý thuyết chính trị gây tranh cãi hoặc mang tính cực đoan hoàn toàn chỉ phục vụ mục đích thông tin và phân tích học thuật. Nhà phát triển không ủng hộ, cổ xúy hay tiếp tay cho bất kỳ tư tưởng hoặc hành vi phản động, cực đoan, chống phá bất kỳ nhà nước, đất nước, chính phủ hay tổ chức chính trị nào.
 
 ### 5. Nội dung Bên thứ ba và Quyền Sở hữu Trí tuệ
 Một số bộ câu hỏi, phần mô tả, hệ thống phân loại và tài liệu khác có thể bắt nguồn từ các dự án bên thứ ba độc lập và các tác giả tương ứng.
