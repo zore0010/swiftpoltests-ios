@@ -1,42 +1,73 @@
 # Political Tests (SwiftPolTest)
 
-An iOS app with two political-values quizzes behind one menu, built in SwiftUI:
+An iOS app that puts several political-values quizzes behind one menu. It is built in SwiftUI, with the quizzes
+themselves shown in WebKit screens, except NeoValues, which is rebuilt natively.
 
-- **NeoValues**, rebuilt natively in SwiftUI from the fork of neomediavalist's project. The questions, descriptions and matching rules are the original ones.
-- **NeoValues (web)**, the original NeoValues web pages, in a WebKit screen.
-- **12 Axes**, the MIT-licensed quiz from the politicaltests project, in a WebKit screen.
+Bundle identifier: `com.zore.swiftpoltest.app`. The app was previously built as `com.zore.wkwvtests`; that is a
+different app on the phone, so its saved data is not carried over.
 
-Each quiz saves every answer as you go. An unfinished quiz can be resumed after a misclick or a restart, and each
-finished result is saved as a readable Markdown file in Files > Political Tests.
+## Quizzes
 
-License: CC BY-NC-SA 4.0 for this project. Credits and the MIT notices are in `ATTRIBUTION.md` and in the app's
-About screen. Privacy policy, legal notice and license are `PRIVACY.md`, `LEGAL_NOTICE.md` and `LICENSE`; the app
-shows the same text.
+| Quiz | How it is shown | License |
+| --- | --- | --- |
+| NeoValues | Native SwiftUI, from the fork of neomediavalist's project | CC BY-NC-SA 4.0 |
+| NeoValues (web) | The original web pages, in WebKit | CC BY-NC-SA 4.0 |
+| 12 Axes | WebKit | MIT |
+| AuthValues | WebKit | MIT |
+| InfValues | WebKit | MIT |
+| RightValues | WebKit | MIT |
+| 10Groups | WebKit | MIT |
+| 8Dreams | WebKit | MIT |
+| TheoValues | WebKit | CC BY-NC-SA 4.0 |
+| ReligioQuest | WebKit | CC BY-NC-SA 4.0 |
+| MyTests | WebKit | CC BY-NC-SA 4.0 |
 
-## How the quizzes are built
+Not every quiz saves yet. Resume and saved results work for NeoValues (native), NeoValues (web) and 12 Axes. The other
+quizzes open and can be answered, but their answers are not saved and their results are not written to Files.
 
-`scripts/fetch-sources.sh` clones each source at a pinned commit. It then:
+Finished results of the NeoValues and 12 Axes quizzes are saved as readable Markdown files in Files > Political Tests.
 
-- copies the quiz folders into `Web/` for the WebKit screens, and removes the excluded ideologies with
+## Licenses and credits
+
+The code and documentation of this project are under CC BY-NC-SA 4.0. Each quiz keeps its own license, and its license
+text is bundled with it. Credits are in `ATTRIBUTION.md` and on the About screen. The privacy policy, legal notice and
+license are `PRIVACY.md`, `LEGAL_NOTICE.md` and `LICENSE`. The app shows the same text.
+
+The app makes no network connections. Every script, stylesheet and font the quizzes use is bundled inside the app.
+Analytics and advertising code has been removed from the imported quizzes, and the fascist ideologies have been removed
+from their data.
+
+## Source of the quizzes
+
+`scripts/fetch-sources.sh` clones every source at a pinned commit and then:
+
+- copies the quiz folders into `Web/tests/`, and removes the excluded NeoValues ideologies with
   `scripts/filter-neovalues.js` (the list is in `scripts/neovalues-exclusions.json`);
+- runs `scripts/import-tests.js` on the imported quizzes. It removes analytics and advertising code, downloads every
+  script, stylesheet and font into each quiz's `vendor/` folder, removes the fascist ideologies, makes the paths relative,
+  and fails the build if an external resource or a missing local file is still referenced;
 - exports the native NeoValues data into `Generated/neovalues/` with `scripts/export-neovalues.js`;
 - writes `Tests/neovalues-golden.json` with `scripts/golden-neovalues.js`, which runs NeoValues' own scoring
   (`results.html`) and quiz logic (`quiz.js`) in Node, so the Swift tests compare against the original code;
 - copies the legal documents into `Generated/legal/`.
 
-The pins are at the top of the script. The bundled quizzes are not edited.
+The pinned commits are listed in the script. The quizzes are not edited, except for the changes above.
 
-`App/OverlayScript.swift` is the one piece of JavaScript written for this app. It is added to each web quiz page
-and wraps the quiz's own functions to save and restore state.
+`App/OverlayScript.swift` is the one piece of JavaScript written for this app. It is added to the 12 Axes and NeoValues
+(web) pages and wraps their own functions to save and restore state. The other quizzes are not covered yet.
 
-`App/NeoValues/` is the native NeoValues: `NeoValuesData` loads the exported data, `NeoValuesQuiz` walks the
-question tree like `quiz.js`, `NeoValuesMatcher` ports the matching in `results.html`, and the views show the
-questions and results.
+`App/NeoValues/` is the native NeoValues: `NeoValuesData` loads the exported data, `NeoValuesQuiz` walks the question
+tree like `quiz.js`, `NeoValuesMatcher` ports the matching in `results.html`, and the views show the questions and results.
+
+## App icon
+
+The icon is `App/Assets.xcassets/AppIcon.appiconset/AppIcon.png`: a 1024 × 1024 PNG with no transparency. The icon
+catalog's `Contents.json` names that file.
 
 ## Build
 
-CI (push to `main`, or run the iOS workflow by hand) runs the tests and produces an unsigned `SwiftPolTest-unsigned-ipa`
-artifact. If a step fails, the errors are listed on the run's summary page.
+CI runs on pushes to `main` and on pull requests. It fetches the sources, runs the unit tests, and archives an unsigned
+`SwiftPolTest-unsigned-ipa` artifact. A failed step is listed on the run's summary page.
 
 Locally (macOS only, Node needed for the fetch step):
 
@@ -53,10 +84,12 @@ open SwiftPolTest.xcodeproj
 | --- | --- |
 | `App/` | SwiftUI menu, WebView screen, scheme handler, progress and result storage, About and legal screens |
 | `App/NeoValues/` | Native NeoValues: data, quiz engine, matcher, views |
-| `App/OverlayScript.swift` | The overlay that saves and restores each web quiz |
+| `App/OverlayScript.swift` | The overlay that saves and restores the 12 Axes and NeoValues (web) quizzes |
 | `App/AxesSpec.swift` | The 12 Axes names, poles, and score bands |
+| `App/Assets.xcassets/` | The app icon |
 | `Tests/` | Routing, storage, legal text, and NeoValues tests (matching and quiz checked against the original code) |
 | `scripts/fetch-sources.sh` | Builds `Web/`, `Generated/` and the golden reference from the pinned sources |
+| `scripts/import-tests.js` | Prepares the imported quizzes: analytics removed, everything bundled, paths fixed, checks |
 | `scripts/export-neovalues.js` | Exports the NeoValues data as JSON |
 | `scripts/golden-neovalues.js` | Writes the reference results from the original NeoValues code |
 | `project.yml` | XcodeGen project (the `.xcodeproj` is generated, not committed) |

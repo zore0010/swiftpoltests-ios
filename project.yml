@@ -44,8 +44,8 @@ targets:
         LSSupportsOpeningDocumentsInPlace: true
     settings:
       base:
-        # Kept from the earlier builds, so the app keeps its saved data on the phone.
-        PRODUCT_BUNDLE_IDENTIFIER: com.zore.wkwvtests
+        # A new identifier: an app installed under the old one (com.zore.wkwvtests) keeps its own data.
+        PRODUCT_BUNDLE_IDENTIFIER: com.zore.swiftpoltest.app
         GENERATE_INFOPLIST_FILE: NO
         TARGETED_DEVICE_FAMILY: "1"
 
@@ -58,7 +58,7 @@ targets:
       - target: SwiftPolTest
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: com.zore.wkwvtests.tests
+        PRODUCT_BUNDLE_IDENTIFIER: com.zore.swiftpoltest.app.tests
         TEST_HOST: "$(BUILT_PRODUCTS_DIR)/SwiftPolTest.app/SwiftPolTest"
         BUNDLE_LOADER: "$(TEST_HOST)"
 
