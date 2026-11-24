@@ -14,7 +14,7 @@ const { execFileSync } = require('child_process');
 
 const webRoot = path.resolve(process.argv[2] || 'Web');
 const noNet = process.argv.includes('--no-net');
-const TESTS = ['axes', 'auth', 'inf', 'rightvalues', '10groups', '8dreams', 'theovalues', 'religioquest', 'mytests'];
+const TESTS = ['axes', 'neovalues', 'auth', 'inf', 'rightvalues', '10groups', '8dreams', 'theovalues', 'religioquest', 'mytests'];
 const CACHE = path.join(os.tmpdir(), 'political-tests-vendor');
 const UA = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Safari/605.1.15';
 
