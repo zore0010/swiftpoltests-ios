@@ -23,8 +23,9 @@ enum OverlayScript {
     try { handler.postMessage(message); } catch (e) { }
   }
 
+  // The page is sent with the state, so Resume can open the same quiz page (quiz.html or longquiz.html).
   function save(state) {
-    post({ type: 'save', payload: JSON.stringify(state) });
+    post({ type: 'save', payload: JSON.stringify(state), page: page });
   }
 
   function complete(data) {
@@ -111,6 +112,8 @@ enum OverlayScript {
 
   function start() {
     if (page === 'quiz.html' || page === 'longquiz.html') {
+      // A new run of the quiz may finish again, even with the same answers as the last one.
+      sessionStorage.removeItem('wkwv-last-complete-' + testID);
       if (testID === 'axes') { axesWrap(); }
       if (testID === 'neovalues') { nvWrap(); }
       post({ type: 'load' });

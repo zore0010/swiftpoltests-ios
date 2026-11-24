@@ -6,6 +6,8 @@ struct UnfinishedSession: Codable, Equatable {
     let startedAt: Date
     /// The quiz's state, as the JSON text the page sent.
     let state: String
+    /// The quiz page the state came from, such as quiz.html. Missing in sessions saved before this was recorded.
+    let page: String?
 }
 
 /// One unfinished session per test, kept in the app's private storage.
@@ -39,13 +41,15 @@ enum ProgressStore {
     }
 
     /// Saves the quiz's state. The first save of a run starts a new session, and later saves keep its id.
-    static func save(state: String, for testID: String) throws {
+    /// A save without a page keeps the page of the session.
+    static func save(state: String, page: String? = nil, for testID: String) throws {
         try validateJSON(state)
         let current = load(testID)
         let session = UnfinishedSession(
             id: current?.id ?? newID(),
             startedAt: current?.startedAt ?? Date(),
-            state: state
+            state: state,
+            page: page ?? current?.page
         )
         let data = try JSONEncoder().encode(session)
         try data.write(to: try fileURL(for: testID), options: .atomic)

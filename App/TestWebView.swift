@@ -7,6 +7,17 @@ struct TestWebView: UIViewRepresentable {
     let test: TestDefinition
     let webRoot: URL
 
+    /// The quiz pages a session can resume on. A page name from outside this list is never opened.
+    private static let resumablePages: Set<String> = ["quiz.html", "longquiz.html"]
+
+    /// The page the web view opens. A test with an unfinished session opens the quiz page it was on, so Resume goes
+    /// straight to the question. Anything else opens the test's entry page.
+    static func startURL(for test: TestDefinition) -> URL {
+        let saved = ProgressStore.load(test.id)?.page
+        let page = saved.flatMap { resumablePages.contains($0) ? $0 : nil } ?? test.entryPage
+        return URL(string: TestRouting.scheme + "://" + test.id + "/" + page) ?? TestRouting.startURL(for: test)
+    }
+
     func makeCoordinator() -> Coordinator {
         Coordinator(test: test)
     }
@@ -34,7 +45,7 @@ struct TestWebView: UIViewRepresentable {
         webView.uiDelegate = context.coordinator
         webView.allowsBackForwardNavigationGestures = true
         context.coordinator.webView = webView
-        webView.load(URLRequest(url: TestRouting.startURL(for: test)))
+        webView.load(URLRequest(url: TestWebView.startURL(for: test)))
         return webView
     }
 
@@ -67,7 +78,7 @@ struct TestWebView: UIViewRepresentable {
                 webView?.evaluateJavaScript("window.wkwvRestore(" + saved + ");", completionHandler: nil)
             case "save":
                 if let payload = body["payload"] as? String {
-                    try? ProgressStore.save(state: payload, for: test.id)
+                    try? ProgressStore.save(state: payload, page: body["page"] as? String, for: test.id)
                 }
             case "complete":
                 if let payload = body["payload"] as? String {
