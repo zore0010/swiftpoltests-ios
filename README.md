@@ -3,9 +3,6 @@
 An iOS app that puts several political-values quizzes behind one menu. It is built in SwiftUI, with the quizzes
 themselves shown in WebKit screens, except NeoValues, which is rebuilt natively.
 
-Bundle identifier: `com.zore.swiftpoltest.app`. The app was previously built as `com.zore.wkwvtests`; that is a
-different app on the phone, so its saved data is not carried over.
-
 ## Quizzes
 
 | Quiz | How it is shown | License |
@@ -58,11 +55,6 @@ The pinned commits are listed in the script. The quizzes are not edited, except 
 
 `App/NeoValues/` is the native NeoValues: `NeoValuesData` loads the exported data, `NeoValuesQuiz` walks the question
 tree like `quiz.js`, `NeoValuesMatcher` ports the matching in `results.html`, and the views show the questions and results.
-
-## App icon
-
-The icon is `App/Assets.xcassets/AppIcon.appiconset/AppIcon.png`: a 1024 × 1024 PNG with no transparency. The icon
-catalog's `Contents.json` names that file.
 
 ## Build
 
